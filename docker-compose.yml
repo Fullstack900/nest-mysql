@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+  adminer:
+      container_name: ash_adminer
+      image: adminer
+      restart: always
+      ports:
+        - 8080:8080
+  backend:
+    container_name: ash_backend
+    restart: always
+    build: .
+    environment:
+      - APP_ENV=development
+      - APP_PORT=3000
+    volumes:
+      - ./src:/var/www/ash/src
+      - node_modules:/var/www/ash/node_modules
+    working_dir: /var/www/ash
+    ports:
+      - "3000:3000"
+    links:
+      - mysql
+      # - redis
+    depends_on:
+      - mysql
+      # - redis
+  mysql: # Example Service
+    container_name: ash_mysql
+    restart: always
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=rootroot
+      - MYSQL_PASSWORD=rootroot
+      - MYSQL_DATABASE=almoosa
+    ports:
+    - "3306:3306"
+    volumes:
+    - ./data/ash_mysql:/var/lib/mysql
+  # redis: 
+  #   container_name: ash_redis
+  #   restart: always
+  #   image: redis:6.0-alpine
+  #   expose:
+  #     - "6379"
+  #   volumes:
+  #     - ./data/ash_redis:/data
+volumes:
+  node_modules:
